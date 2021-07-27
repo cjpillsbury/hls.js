@@ -5,10 +5,48 @@ import type {
   LoaderStats,
   Loader,
   LoaderConfiguration,
+  PlaylistLoaderContext,
+  LoaderResponse,
 } from '../types/loader';
 import { LoadStats } from '../loader/load-stats';
 
 const AGE_HEADER_LINE_REGEX = /^age:\s*[\d.]+\s*$/m;
+
+type PlaylistDataLoaderContext = PlaylistLoaderContext & LoaderContext;
+type PlaylistData = { size: number; playlistStr: string };
+const playlistDict: { [k: string]: PlaylistData } = {};
+
+const isMediaPlaylistLoadContext = (
+  context: PlaylistLoaderContext | LoaderContext
+): context is PlaylistDataLoaderContext =>
+  !!(context as PlaylistLoaderContext).type &&
+  (context as PlaylistLoaderContext).type !== 'manifest';
+const getPrevPlaylistData = (
+  context: PlaylistDataLoaderContext
+): PlaylistData => {
+  const urlObj = new URL(context.url);
+  const uid = `${context.id}-${context.level}-${urlObj.origin}${urlObj.pathname}`;
+  if (!playlistDict[uid]) {
+    playlistDict[uid] = {
+      size: 0,
+      playlistStr: '',
+    };
+  }
+  return playlistDict[uid];
+};
+
+const updatePrevPlaylistData = (
+  context: PlaylistDataLoaderContext,
+  xhr: XMLHttpRequest
+): PlaylistData => {
+  const prevPlaylistData = getPrevPlaylistData(context);
+  const { size, playlistStr } = prevPlaylistData;
+  const latestSize = +(xhr.getResponseHeader('Content-Length') as string);
+  const latestPlaylistStr = xhr.responseText;
+  prevPlaylistData.size = size + latestSize;
+  prevPlaylistData.playlistStr = `${playlistStr}${latestPlaylistStr}`;
+  return prevPlaylistData;
+};
 
 class XhrLoader implements Loader<LoaderContext> {
   private xhrSetup: Function | null;
@@ -67,7 +105,29 @@ class XhrLoader implements Loader<LoaderContext> {
     this.stats.loading.start = self.performance.now();
     this.context = context;
     this.config = config;
-    this.callbacks = callbacks;
+    const baseOnSuccess = callbacks.onSuccess;
+    this.callbacks = {
+      ...callbacks,
+      onSuccess: (
+        response: LoaderResponse,
+        stats: LoaderStats,
+        context: PlaylistLoaderContext,
+        networkDetails: any = null
+      ) => {
+        if (!isMediaPlaylistLoadContext(context))
+          return baseOnSuccess(response, stats, context, networkDetails);
+        const nextPlaylistData = updatePrevPlaylistData(
+          context,
+          networkDetails as XMLHttpRequest
+        );
+        const nextResponse = {
+          ...response,
+          data: nextPlaylistData.playlistStr,
+        };
+        baseOnSuccess(nextResponse, stats, context, networkDetails);
+      },
+    };
+
     this.retryDelay = config.retryDelay;
     this.loadInternal();
   }
@@ -108,6 +168,11 @@ class XhrLoader implements Loader<LoaderContext> {
       return;
     }
 
+    if (isMediaPlaylistLoadContext(context)) {
+      const prevPlaylistPart = getPrevPlaylistData(context);
+
+      xhr.setRequestHeader('Range', 'bytes=' + prevPlaylistPart.size + '-');
+    }
     if (context.rangeEnd) {
       xhr.setRequestHeader(
         'Range',
