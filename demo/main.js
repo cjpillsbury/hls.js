@@ -5,6 +5,7 @@ import { pack } from 'jsonpack';
 import 'promise-polyfill/src/polyfill';
 import { sortObject, copyTextToClipboard } from './demo-utils';
 import { TimelineChart } from './chart/timeline-chart';
+import { addLLFailoverMonitor } from './llFailover.ts';
 
 const NETLIFY = __NETLIFY__; // replaced in build
 
@@ -367,6 +368,7 @@ function loadSelectedStream() {
   }
   addChartEventListeners(hls);
   addVideoEventListeners(video);
+  addLLFailoverMonitor(hls);
 
   hls.loadSource(url);
   hls.autoLevelCapping = levelCapping;
