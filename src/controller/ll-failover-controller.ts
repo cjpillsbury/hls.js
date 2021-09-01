@@ -1,3 +1,10 @@
+import { ErrorDetails, ErrorTypes } from '../errors';
+import { Events } from '../events';
+import Hls, { HlsConfig } from '../hls';
+import { LevelDetails } from '../loader/level-details';
+import { ErrorData } from '../types/events';
+import { Level } from '../types/level';
+
 type Stall = {
   type: string;
   details: string;
@@ -6,19 +13,31 @@ type Stall = {
   endTimestamp?: number;
 };
 
-const isLowLatencyStream = (levelDetails) =>
+type LowLatencyFailoverConfig = {
+  llFailoverEnabled: boolean;
+  targetLLFailoverLevelSelector: (levels: Level[]) => number;
+  llFailoverTimeWindow: number;
+  llFailoverStallCount: number;
+  llFailoverStallRatio: number;
+};
+
+type HlsWithLowLatencyFailover = Hls & {
+  config: HlsConfig & Partial<LowLatencyFailoverConfig>;
+};
+
+const isLowLatencyStream = (levelDetails: LevelDetails) =>
   levelDetails.live && !!levelDetails.partList;
-const DEFAULT_TARGET_LL_FAILOVER_LEVEL = 0;
+const DEFAULT_TARGET_LL_FAILOVER_LEVEL_SELECTOR = (levels: Level[] = []) =>
+  Math.floor(levels.length / 2);
 const DEFAULT_LL_FAILOVER_TIME_WINDOW = 60000;
 const DEFAULT_LL_FAILOVER_STALL_COUNT = 5;
 const DEFAULT_LL_FAILOVER_STALLED_RATIO = 0.05;
 
-// @ts-ignore
-const { Events, ErrorTypes, ErrorDetails } = Hls;
-
-const finalizeLastStall = (stalls, detailType) => {
+const finalizeLastStall = (stalls: Stall[], detailType: ErrorDetails) => {
   const stall = stalls.reverse().find(({ details }) => details === detailType);
-  stall.endTimestamp = Date.now();
+  if (stall) {
+    stall.endTimestamp = Date.now();
+  }
   return stalls;
 };
 
@@ -27,7 +46,7 @@ const relevantErrorDetails = [
   ErrorDetails.BUFFER_STALLED_ERROR,
   ErrorDetails.LEVEL_LOAD_TIMEOUT,
 ];
-const isRelevantError = ({ type, details }) =>
+const isRelevantError = ({ type, details }: ErrorData) =>
   relevantErrorTypes.includes(type) && relevantErrorDetails.includes(details);
 
 const StallEventTypeMap = {
@@ -39,7 +58,7 @@ const getWindowStart = (
   llFailoverTimeWindow = DEFAULT_LL_FAILOVER_TIME_WINDOW
 ) => Date.now() - llFailoverTimeWindow;
 
-const getStallRatio = (stalls, llFailoverTimeWindow) => {
+const getStallRatio = (stalls: Stall[], llFailoverTimeWindow: number) => {
   const windowStart = getWindowStart(llFailoverTimeWindow);
   const now = Date.now();
   const totalStallDuration = stalls.reduce(
@@ -66,15 +85,22 @@ const getStallRatio = (stalls, llFailoverTimeWindow) => {
     stallRatio
   );
   console.warn('!!!!! stall info', 'stalls', ...stalls);
-  return stalls;
+  return stallRatio;
 };
 
-const pruneStallsByTimeWindow = (stalls, llFailoverTimeWindow) => {
+const pruneStallsByTimeWindow = (
+  stalls: Stall[],
+  llFailoverTimeWindow: number
+) => {
   const windowStart = getWindowStart(llFailoverTimeWindow);
-  return stalls.filter(({ endTimestamp }) => endTimestamp >= windowStart);
+  return stalls.filter(
+    ({ endTimestamp }) => !endTimestamp || endTimestamp >= windowStart
+  );
 };
 
-export const addLLFailoverMonitor = (hls) => {
+export const addLLFailoverMonitor = (hls: HlsWithLowLatencyFailover) => {
+  // if (!hls.config.llFailoverEnabled) return;
+
   let targetLLFailoverLevel = -1;
   let llFailoverTimeWindow = Number.POSITIVE_INFINITY;
   let llFailoverStallCount = Number.POSITIVE_INFINITY;
@@ -82,14 +108,24 @@ export const addLLFailoverMonitor = (hls) => {
 
   let stalls: Stall[] = [];
   const errorHandler = (_eventType, data) => {
-    if (hls.currentLevel > targetLLFailoverLevel) return;
     if (!isRelevantError(data)) return;
+    const level = hls.nextAutoLevel;
+    if (level > targetLLFailoverLevel) return;
+
     stalls = pruneStallsByTimeWindow(stalls, llFailoverTimeWindow);
     const { type, details } = data;
+    console.warn(
+      '!!!!! stall info',
+      'finalizing last stall',
+      'details',
+      details,
+      'StallEventTypeMap[details]',
+      StallEventTypeMap[details]
+    );
     stalls.push({
       type,
       details,
-      currentLevel: hls.currentLevel,
+      currentLevel: level,
       startTimestamp: Date.now(),
     });
 
@@ -132,7 +168,8 @@ export const addLLFailoverMonitor = (hls) => {
     // 3. Since we are both in lowLatencyMode and are playing a low latency stream, start monitoring
     // for failover conditions.
     targetLLFailoverLevel =
-      hls.config.targetLLFailoverLevel ?? DEFAULT_TARGET_LL_FAILOVER_LEVEL;
+      hls.config.targetLLFailoverLevelSelector?.(hls.levels) ??
+      DEFAULT_TARGET_LL_FAILOVER_LEVEL_SELECTOR(hls.levels);
     llFailoverTimeWindow =
       hls.config.llFailoverTimeWindow ?? DEFAULT_LL_FAILOVER_TIME_WINDOW;
     llFailoverStallCount =
