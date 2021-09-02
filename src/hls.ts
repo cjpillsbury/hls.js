@@ -4,6 +4,7 @@ import KeyLoader from './loader/key-loader';
 import ID3TrackController from './controller/id3-track-controller';
 import LatencyController from './controller/latency-controller';
 import LevelController from './controller/level-controller';
+import { LowLatencyFailoverController } from './controller/ll-failover-controller';
 import { FragmentTracker } from './controller/fragment-tracker';
 import StreamController from './controller/stream-controller';
 import { isSupported } from './is-supported';
@@ -183,6 +184,9 @@ export default class Hls implements HlsEventEmitter {
       null,
       coreComponents
     );
+
+    // @ts-ignore
+    this.llFailoverController = new LowLatencyFailoverController(this);
 
     this.coreComponents = coreComponents;
   }
