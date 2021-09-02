@@ -2,6 +2,7 @@ import { ErrorDetails, ErrorTypes } from '../errors';
 import { Events } from '../events';
 import Hls, { HlsConfig } from '../hls';
 import { LevelDetails } from '../loader/level-details';
+import { ComponentAPI } from '../types/component-api';
 import { ErrorData } from '../types/events';
 import { Level } from '../types/level';
 
@@ -98,21 +99,59 @@ const pruneStallsByTimeWindow = (
   );
 };
 
-export const addLLFailoverMonitor = (hls: HlsWithLowLatencyFailover) => {
-  // if (!hls.config.llFailoverEnabled) return;
+export class LowLatencyFailoverController implements ComponentAPI {
+  protected hls: HlsWithLowLatencyFailover;
+  protected targetLLFailoverLevel = -1;
+  protected llFailoverTimeWindow = Number.POSITIVE_INFINITY;
+  protected llFailoverStallCount = Number.POSITIVE_INFINITY;
+  protected llFailoverStallRatio = Number.POSITIVE_INFINITY;
+  protected stalls: Stall[] = [];
 
-  let targetLLFailoverLevel = -1;
-  let llFailoverTimeWindow = Number.POSITIVE_INFINITY;
-  let llFailoverStallCount = Number.POSITIVE_INFINITY;
-  let llFailoverStallRatio = Number.POSITIVE_INFINITY;
+  constructor(hls: HlsWithLowLatencyFailover) {
+    this.hls = hls;
+    const { llFailoverEnabled = true } = hls.config;
 
-  let stalls: Stall[] = [];
-  const errorHandler = (_eventType, data) => {
+    // Before applying any logic, first determine:
+    // 1. Are we configured for lowLatencyMode?
+    if (hls.lowLatencyMode && llFailoverEnabled) {
+      // 2. Wait until the first level is loaded to determine if we're playing a low latency stream
+      hls.once(Events.LEVEL_LOADED, this.onLevelLoaded, this);
+    }
+  }
+
+  protected onLevelLoaded(_eventType, data) {
+    const { details } = data;
+    if (!isLowLatencyStream(details)) return;
+    const { hls } = this;
+    const { config } = hls;
+    // 3. Since we are both in lowLatencyMode and are playing a low latency stream, start monitoring
+    // for failover conditions.
+    this.targetLLFailoverLevel =
+      config.targetLLFailoverLevelSelector?.(hls.levels) ??
+      DEFAULT_TARGET_LL_FAILOVER_LEVEL_SELECTOR(hls.levels);
+    this.llFailoverTimeWindow =
+      config.llFailoverTimeWindow ?? DEFAULT_LL_FAILOVER_TIME_WINDOW;
+    this.llFailoverStallCount =
+      config.llFailoverStallCount ?? DEFAULT_LL_FAILOVER_STALL_COUNT;
+    this.llFailoverStallRatio =
+      config.llFailoverStallRatio ?? DEFAULT_LL_FAILOVER_STALLED_RATIO;
+    hls.on(Events.ERROR, this.onError, this);
+  }
+
+  protected onError(_eventType, data) {
+    const {
+      hls,
+      targetLLFailoverLevel,
+      llFailoverTimeWindow,
+      llFailoverStallCount,
+      llFailoverStallRatio,
+      stalls,
+    } = this;
     if (!isRelevantError(data)) return;
     const level = hls.nextAutoLevel;
     if (level > targetLLFailoverLevel) return;
 
-    stalls = pruneStallsByTimeWindow(stalls, llFailoverTimeWindow);
+    this.stalls = pruneStallsByTimeWindow(stalls, llFailoverTimeWindow);
     const { type, details } = data;
     console.warn(
       '!!!!! stall info',
@@ -131,7 +170,7 @@ export const addLLFailoverMonitor = (hls: HlsWithLowLatencyFailover) => {
 
     if (stalls.length >= llFailoverStallCount) {
       hls.lowLatencyMode = false;
-      hls.off(Events.ERROR, errorHandler);
+      hls.off(Events.ERROR, this.onError, this);
       console.warn(
         'Cannot keep up with low latency mode. Attempting non-low latency playback!'
       );
@@ -148,11 +187,11 @@ export const addLLFailoverMonitor = (hls: HlsWithLowLatencyFailover) => {
         StallEventTypeMap[details]
       );
       console.warn('!!!!! stall info', 'stalls', ...stalls);
-      stalls = finalizeLastStall(stalls, details);
+      this.stalls = finalizeLastStall(stalls, details);
       const stallRatio = getStallRatio(stalls, llFailoverTimeWindow);
       if (stallRatio >= llFailoverStallRatio) {
         hls.lowLatencyMode = false;
-        hls.off(Events.ERROR, errorHandler);
+        hls.off(Events.ERROR, this.onError, this);
         console.warn(
           'Cannot keep up with low latency mode. Attempting non-low latency playback!'
         );
@@ -160,29 +199,11 @@ export const addLLFailoverMonitor = (hls: HlsWithLowLatencyFailover) => {
     });
     console.log('drift', hls.drift);
     console.log('latency', hls.latency);
-  };
-
-  const levelLoadedHandler = (_eventType, data) => {
-    const { details } = data;
-    if (!isLowLatencyStream(details)) return;
-    // 3. Since we are both in lowLatencyMode and are playing a low latency stream, start monitoring
-    // for failover conditions.
-    targetLLFailoverLevel =
-      hls.config.targetLLFailoverLevelSelector?.(hls.levels) ??
-      DEFAULT_TARGET_LL_FAILOVER_LEVEL_SELECTOR(hls.levels);
-    llFailoverTimeWindow =
-      hls.config.llFailoverTimeWindow ?? DEFAULT_LL_FAILOVER_TIME_WINDOW;
-    llFailoverStallCount =
-      hls.config.llFailoverStallCount ?? DEFAULT_LL_FAILOVER_STALL_COUNT;
-    llFailoverStallRatio =
-      hls.config.llFailoverStallRatio ?? DEFAULT_LL_FAILOVER_STALLED_RATIO;
-    hls.on(Events.ERROR, errorHandler);
-  };
-
-  // Before applying any logic, first determine:
-  // 1. Are we configured for lowLatencyMode?
-  if (hls.lowLatencyMode) {
-    // 2. Wait until the first level is loaded to determine if we're playing a low latency stream
-    hls.once(Events.LEVEL_LOADED, levelLoadedHandler);
   }
-};
+
+  public destroy() {
+    const { hls } = this;
+    hls.off(Events.ERROR, this.onError, this);
+    // hls.off(Events.LEVEL_LOADED, this.onLevelLoaded, this);
+  }
+}
