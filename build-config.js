@@ -8,6 +8,7 @@ const replace = require('@rollup/plugin-replace');
 const terser = require('@rollup/plugin-terser');
 const istanbul = require('rollup-plugin-istanbul');
 const fs = require('fs');
+const { visualizer } = require('rollup-plugin-visualizer');
 
 const pkgJson = JSON.parse(
   fs.readFileSync('./package.json', { encoding: 'utf-8' }),
@@ -309,6 +310,10 @@ const buildRollupConfig = ({
       ...(includeCoverage
         ? [istanbul({ exclude: ['tests/**/*', 'node_modules/**/*'] })]
         : []),
+      visualizer({
+        emitFile: true,
+        filename: `${outputName}${minified ? `.min` : ''}.${extension}.stats.html`,
+      }),
     ],
   };
 };
