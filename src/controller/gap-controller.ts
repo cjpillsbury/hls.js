@@ -4,7 +4,7 @@ import { ErrorTypes, ErrorDetails } from '../errors';
 import { PlaylistLevelType } from '../types/loader';
 import { Events } from '../events';
 import { Logger } from '../utils/logger';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { BufferInfo } from '../utils/buffer-helper';
 import type { HlsConfig } from '../config';
 import type { Fragment } from '../loader/fragment';
@@ -20,7 +20,7 @@ export default class GapController extends Logger {
   private config: HlsConfig;
   private media: HTMLMediaElement | null = null;
   private fragmentTracker: FragmentTracker;
-  private hls: Hls;
+  private hls: HlsBase;
   private nudgeRetry: number = 0;
   private stallReported: boolean = false;
   private stalled: number | null = null;
@@ -32,7 +32,7 @@ export default class GapController extends Logger {
     config: HlsConfig,
     media: HTMLMediaElement,
     fragmentTracker: FragmentTracker,
-    hls: Hls,
+    hls: HlsBase,
   ) {
     super('gap-controller', hls.logger);
     this.config = config;
@@ -198,7 +198,7 @@ export default class GapController extends Logger {
   /**
    * Detects and attempts to fix known buffer stalling issues.
    * @param bufferInfo - The properties of the current buffer.
-   * @param stalledDurationMs - The amount of time Hls.js has been stalling for.
+   * @param stalledDurationMs - The amount of time HlsBase.js has been stalling for.
    * @private
    */
   private _tryFixBufferStall(

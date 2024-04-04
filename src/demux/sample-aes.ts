@@ -2,7 +2,7 @@
  * SAMPLE-AES decrypter
  */
 
-import { HlsConfig } from '../config';
+import type { HlsConfig } from '../config';
 import Decrypter from '../crypt/decrypter';
 import { DecrypterAesMode } from '../crypt/decrypter-aes-mode';
 import { HlsEventEmitter } from '../events';

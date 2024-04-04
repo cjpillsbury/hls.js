@@ -7,11 +7,11 @@ import type {
   MediaAttachingData,
 } from '../types/events';
 import type { ComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { HlsConfig } from '../config';
 
 export default class LatencyController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private readonly config: HlsConfig;
   private media: HTMLMediaElement | null = null;
   private levelDetails: LevelDetails | null = null;
@@ -19,7 +19,7 @@ export default class LatencyController implements ComponentAPI {
   private stallCount: number = 0;
   private _latency: number | null = null;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     this.config = hls.config;
     this.registerListeners();

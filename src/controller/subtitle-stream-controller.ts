@@ -14,7 +14,7 @@ import {
   getAesModeFromFullSegmentMethod,
 } from '../utils/encryption-methods-util';
 import type { NetworkComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { FragmentTracker } from './fragment-tracker';
 import type KeyLoader from '../loader/key-loader';
 import type { LevelDetails } from '../loader/level-details';
@@ -47,7 +47,7 @@ export class SubtitleStreamController
   private mainDetails: LevelDetails | null = null;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     fragmentTracker: FragmentTracker,
     keyLoader: KeyLoader,
   ) {

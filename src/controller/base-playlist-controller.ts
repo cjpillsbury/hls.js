@@ -1,4 +1,4 @@
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { NetworkComponentAPI } from '../types/component-api';
 import {
   getSkipValue,
@@ -23,12 +23,12 @@ export default class BasePlaylistController
   extends Logger
   implements NetworkComponentAPI
 {
-  protected hls: Hls;
+  protected hls: HlsBase;
   protected timer: number = -1;
   protected requestScheduled: number = -1;
   protected canLoad: boolean = false;
 
-  constructor(hls: Hls, logPrefix: string) {
+  constructor(hls: HlsBase, logPrefix: string) {
     super(logPrefix, hls.logger);
     this.hls = hls;
   }

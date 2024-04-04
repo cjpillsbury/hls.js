@@ -9,7 +9,7 @@ import {
   findMatchingOption,
   matchesOption,
 } from '../utils/rendition-helper';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type {
   AudioSelectionOption,
   MediaPlaylist,
@@ -32,7 +32,7 @@ class AudioTrackController extends BasePlaylistController {
   private currentTrack: MediaPlaylist | null = null;
   private selectDefaultTrack: boolean = true;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super(hls, 'audio-track-controller');
     this.registerListeners();
   }

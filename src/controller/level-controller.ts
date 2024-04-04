@@ -22,8 +22,7 @@ import BasePlaylistController from './base-playlist-controller';
 import { PlaylistContextType, PlaylistLevelType } from '../types/loader';
 import ContentSteeringController from './content-steering-controller';
 import { reassignFragmentLevelIndexes } from '../utils/level-helper';
-import { hlsDefaultConfig } from '../config';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { HlsUrlParameters, LevelParsed } from '../types/level';
 import type { MediaPlaylist } from '../types/media-playlist';
 
@@ -40,7 +39,7 @@ export default class LevelController extends BasePlaylistController {
   public onParsedComplete!: Function;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     contentSteeringController: ContentSteeringController | null,
   ) {
     super(hls, 'level-controller');
@@ -333,7 +332,8 @@ export default class LevelController extends BasePlaylistController {
           );
           if (
             startingBwEstimate > bandwidthEstimate &&
-            bandwidthEstimate === hlsDefaultConfig.abrEwmaDefaultEstimate
+            /** @TODO original from defaultHlsConfig. Pull out these default const values to separate file (CJP) */
+            bandwidthEstimate === 5e5
           ) {
             this.hls.bandwidthEstimate = startingBwEstimate;
           }

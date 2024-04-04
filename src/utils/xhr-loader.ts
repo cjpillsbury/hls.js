@@ -8,7 +8,7 @@ import type {
   LoaderResponse,
 } from '../types/loader';
 import { LoadStats } from '../loader/load-stats';
-import { type HlsConfig, RetryConfig } from '../config';
+import type { HlsConfig, RetryConfig } from '../config';
 import { getRetryDelay, shouldRetry } from './error-helper';
 
 const AGE_HEADER_LINE_REGEX = /^age:\s*[\d.]+\s*$/im;

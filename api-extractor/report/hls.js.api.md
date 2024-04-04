@@ -26,7 +26,7 @@ export interface AbrComponentAPI extends ComponentAPI {
 //
 // @public (undocumented)
 export class AbrController extends Logger implements AbrComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     bwEstimator: EwmaBandWidthEstimator;
     // (undocumented)
@@ -37,8 +37,10 @@ export class AbrController extends Logger implements AbrComponentAPI {
     get firstAutoLevel(): number;
     // (undocumented)
     get forcedAutoLevel(): number;
+    // Warning: (ae-forgotten-export) The symbol "HlsBase" needs to be exported by the entry point hls.d.ts
+    //
     // (undocumented)
-    protected hls: Hls;
+    protected hls: HlsBase;
     // (undocumented)
     get nextAutoLevel(): number;
     set nextAutoLevel(nextLevel: number);
@@ -138,7 +140,7 @@ export type AudioSelectionOption = {
 export class AudioStreamController extends BaseStreamController implements NetworkComponentAPI {
     // Warning: (ae-forgotten-export) The symbol "FragmentTracker" needs to be exported by the entry point hls.d.ts
     // Warning: (ae-forgotten-export) The symbol "KeyLoader" needs to be exported by the entry point hls.d.ts
-    constructor(hls: Hls, fragmentTracker: FragmentTracker, keyLoader: KeyLoader);
+    constructor(hls: HlsBase, fragmentTracker: FragmentTracker, keyLoader: KeyLoader);
     // (undocumented)
     clearWaitingFragment(): void;
     // (undocumented)
@@ -175,7 +177,7 @@ export class AudioStreamController extends BaseStreamController implements Netwo
 //
 // @public (undocumented)
 export class AudioTrackController extends BasePlaylistController {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     get allAudioTracks(): MediaPlaylist[];
     // (undocumented)
@@ -241,7 +243,7 @@ export interface BackBufferData {
 //
 // @public (undocumented)
 export class BasePlaylistController extends Logger implements NetworkComponentAPI {
-    constructor(hls: Hls, logPrefix: string);
+    constructor(hls: HlsBase, logPrefix: string);
     // (undocumented)
     protected canLoad: boolean;
     // (undocumented)
@@ -251,7 +253,7 @@ export class BasePlaylistController extends Logger implements NetworkComponentAP
     // (undocumented)
     destroy(): void;
     // (undocumented)
-    protected hls: Hls;
+    protected hls: HlsBase;
     // (undocumented)
     protected loadPlaylist(hlsUrlParameters?: HlsUrlParameters): void;
     // (undocumented)
@@ -301,7 +303,7 @@ export class BaseSegment {
 //
 // @public (undocumented)
 export class BaseStreamController extends TaskLoop implements NetworkComponentAPI {
-    constructor(hls: Hls, fragmentTracker: FragmentTracker, keyLoader: KeyLoader, logPrefix: string, playlistType: PlaylistLevelType);
+    constructor(hls: HlsBase, fragmentTracker: FragmentTracker, keyLoader: KeyLoader, logPrefix: string, playlistType: PlaylistLevelType);
     // (undocumented)
     protected afterBufferFlushed(media: Bufferable, bufferType: SourceBufferName, playlistType: PlaylistLevelType): void;
     // (undocumented)
@@ -385,7 +387,7 @@ export class BaseStreamController extends TaskLoop implements NetworkComponentAP
     // (undocumented)
     protected _handleTransmuxerFlush(chunkMeta: ChunkMetadata): void;
     // (undocumented)
-    protected hls: Hls;
+    protected hls: HlsBase;
     // Warning: (ae-forgotten-export) The symbol "RationalTimestamp" needs to be exported by the entry point hls.d.ts
     //
     // (undocumented)
@@ -551,7 +553,7 @@ export interface BufferCodecsData {
 //
 // @public (undocumented)
 export class BufferController extends Logger implements ComponentAPI {
-    constructor(hls: Hls, fragmentTracker: FragmentTracker);
+    constructor(hls: HlsBase, fragmentTracker: FragmentTracker);
     // (undocumented)
     protected appendChangeType(type: SourceBufferName, mimeType: string): void;
     // (undocumented)
@@ -677,7 +679,7 @@ export type BufferInfo = {
 //
 // @public (undocumented)
 export class CapLevelController implements ComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     get contentScaleFactor(): number;
     // (undocumented)
@@ -757,7 +759,7 @@ export class ChunkMetadata {
 //
 // @public
 export class CMCDController implements ComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     destroy(): void;
 }
@@ -784,7 +786,7 @@ export interface ComponentAPI {
 //
 // @public (undocumented)
 export class ContentSteeringController extends Logger implements NetworkComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     clearTimeout(): void;
     // (undocumented)
@@ -911,7 +913,7 @@ export const enum ElementaryStreamTypes {
 //
 // @public
 export class EMEController extends Logger implements ComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     static CDMCleanupPromise: Promise<void> | void;
     // (undocumented)
@@ -926,8 +928,8 @@ export class EMEController extends Logger implements ComponentAPI {
 //
 // @public (undocumented)
 export type EMEControllerConfig = {
-    licenseXhrSetup?: (this: Hls, xhr: XMLHttpRequest, url: string, keyContext: MediaKeySessionContext, licenseChallenge: Uint8Array) => void | Uint8Array | Promise<Uint8Array | void>;
-    licenseResponseCallback?: (this: Hls, xhr: XMLHttpRequest, url: string, keyContext: MediaKeySessionContext) => ArrayBuffer;
+    licenseXhrSetup?: (this: HlsBase, xhr: XMLHttpRequest, url: string, keyContext: MediaKeySessionContext, licenseChallenge: Uint8Array) => void | Uint8Array | Promise<Uint8Array | void>;
+    licenseResponseCallback?: (this: HlsBase, xhr: XMLHttpRequest, url: string, keyContext: MediaKeySessionContext) => ArrayBuffer;
     emeEnabled: boolean;
     widevineLicenseUrl?: string;
     drmSystems: DRMSystemsConfiguration;
@@ -953,7 +955,7 @@ export const enum ErrorActionFlags {
 //
 // @public (undocumented)
 export class ErrorController extends Logger implements NetworkComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     destroy(): void;
     // (undocumented)
@@ -1250,7 +1252,7 @@ export enum Events {
 //
 // @public (undocumented)
 export class FPSController implements ComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     checkFPS(video: HTMLVideoElement, decodedFrames: number, droppedFrames: number): void;
     // (undocumented)
@@ -1535,126 +1537,11 @@ export interface FragParsingUserdataData {
 export type HdcpLevel = (typeof HdcpLevels)[number];
 
 // @public
-class Hls implements HlsEventEmitter {
+class Hls extends HlsBase implements HlsEventEmitter {
     constructor(userConfig?: Partial<HlsConfig>);
-    get allAudioTracks(): Array<MediaPlaylist>;
-    get allSubtitleTracks(): Array<MediaPlaylist>;
-    attachMedia(media: HTMLMediaElement): void;
-    get audioTrack(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "audioTrack" must appear on the getter, not the setter.
-    set audioTrack(audioTrackId: number);
-    get audioTracks(): Array<MediaPlaylist>;
-    get autoLevelCapping(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "autoLevelCapping" must appear on the getter, not the setter.
-    set autoLevelCapping(newLevel: number);
-    get autoLevelEnabled(): boolean;
-    get bandwidthEstimate(): number;
-    set bandwidthEstimate(abrEwmaDefaultEstimate: number);
-    get capLevelToPlayerSize(): boolean;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "capLevelToPlayerSize" must appear on the getter, not the setter.
-    set capLevelToPlayerSize(shouldStartCapping: boolean);
-    readonly config: HlsConfig;
-    // (undocumented)
-    createController(ControllerClass: any, components: any): any;
-    get currentLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "currentLevel" must appear on the getter, not the setter.
-    set currentLevel(newLevel: number);
     static get DefaultConfig(): HlsConfig;
     // Warning: (ae-setter-with-docs) The doc comment for the property "DefaultConfig" must appear on the getter, not the setter.
-    static set DefaultConfig(defaultConfig: HlsConfig);
-    destroy(): void;
-    detachMedia(): void;
-    get drift(): number | null;
-    // (undocumented)
-    emit<E extends keyof HlsListeners>(event: E, name: E, eventObject: Parameters<HlsListeners[E]>[1]): boolean;
-    // (undocumented)
-    static get ErrorDetails(): typeof ErrorDetails;
-    // (undocumented)
-    static get ErrorTypes(): typeof ErrorTypes;
-    // (undocumented)
-    static get Events(): typeof Events;
-    // (undocumented)
-    get firstAutoLevel(): number;
-    get firstLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "firstLevel" must appear on the getter, not the setter.
-    set firstLevel(newLevel: number);
-    get forceStartLoad(): boolean;
-    static getMediaSource(): typeof MediaSource | undefined;
-    static isMSESupported(): boolean;
-    static isSupported(): boolean;
-    get latency(): number;
-    // (undocumented)
-    get levels(): Level[];
-    // (undocumented)
-    listenerCount<E extends keyof HlsListeners>(event: E): number;
-    // (undocumented)
-    listeners<E extends keyof HlsListeners>(event: E): HlsListeners[E][];
-    get liveSyncPosition(): number | null;
-    get loadLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "loadLevel" must appear on the getter, not the setter.
-    set loadLevel(newLevel: number);
-    loadSource(url: string): void;
-    readonly logger: ILogger;
-    get lowLatencyMode(): boolean;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "lowLatencyMode" must appear on the getter, not the setter.
-    set lowLatencyMode(mode: boolean);
-    // (undocumented)
-    get mainForwardBufferInfo(): BufferInfo | null;
-    get manualLevel(): number;
-    get maxAutoLevel(): number;
-    // (undocumented)
-    get maxBufferLength(): number;
-    // (undocumented)
-    get maxHdcpLevel(): HdcpLevel;
-    set maxHdcpLevel(value: HdcpLevel);
-    get maxLatency(): number;
-    // (undocumented)
-    get media(): HTMLMediaElement | null;
-    get minAutoLevel(): number;
-    get nextAutoLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "nextAutoLevel" must appear on the getter, not the setter.
-    set nextAutoLevel(nextLevel: number);
-    get nextLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "nextLevel" must appear on the getter, not the setter.
-    set nextLevel(newLevel: number);
-    get nextLoadLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "nextLoadLevel" must appear on the getter, not the setter.
-    set nextLoadLevel(level: number);
-    // (undocumented)
-    off<E extends keyof HlsListeners, Context = undefined>(event: E, listener?: HlsListeners[E] | undefined, context?: Context, once?: boolean | undefined): void;
-    // (undocumented)
-    on<E extends keyof HlsListeners, Context = undefined>(event: E, listener: HlsListeners[E], context?: Context): void;
-    // (undocumented)
-    once<E extends keyof HlsListeners, Context = undefined>(event: E, listener: HlsListeners[E], context?: Context): void;
-    pauseBuffering(): void;
-    get playingDate(): Date | null;
-    recoverMediaError(): void;
-    // (undocumented)
-    removeAllListeners<E extends keyof HlsListeners>(event?: E | undefined): void;
-    // (undocumented)
-    removeLevel(levelIndex: number): void;
-    resumeBuffering(): void;
-    setAudioOption(audioOption: MediaPlaylist | AudioSelectionOption | undefined): MediaPlaylist | null;
-    setSubtitleOption(subtitleOption: MediaPlaylist | SubtitleSelectionOption | undefined): MediaPlaylist | null;
-    get startLevel(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "startLevel" must appear on the getter, not the setter.
-    set startLevel(newLevel: number);
-    startLoad(startPosition?: number): void;
-    stopLoad(): void;
-    get subtitleDisplay(): boolean;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "subtitleDisplay" must appear on the getter, not the setter.
-    set subtitleDisplay(value: boolean);
-    get subtitleTrack(): number;
-    // Warning: (ae-setter-with-docs) The doc comment for the property "subtitleTrack" must appear on the getter, not the setter.
-    set subtitleTrack(subtitleTrackId: number);
-    get subtitleTracks(): Array<MediaPlaylist>;
-    swapAudioCodec(): void;
-    get targetLatency(): number | null;
-    // (undocumented)
-    trigger<E extends keyof HlsListeners>(event: E, eventObject: Parameters<HlsListeners[E]>[1]): boolean;
-    get ttfbEstimate(): number;
-    readonly userConfig: Partial<HlsConfig>;
-    static get version(): string;
+    static set DefaultConfig(defaultConfig: HlsConfig | undefined);
 }
 export default Hls;
 
@@ -3195,7 +3082,7 @@ export type SubtitleSelectionOption = {
 //
 // @public (undocumented)
 export class SubtitleStreamController extends BaseStreamController implements NetworkComponentAPI {
-    constructor(hls: Hls, fragmentTracker: FragmentTracker, keyLoader: KeyLoader);
+    constructor(hls: HlsBase, fragmentTracker: FragmentTracker, keyLoader: KeyLoader);
     // (undocumented)
     doTick(): void;
     // (undocumented)
@@ -3224,7 +3111,7 @@ export class SubtitleStreamController extends BaseStreamController implements Ne
 //
 // @public (undocumented)
 export class SubtitleTrackController extends BasePlaylistController {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     get allSubtitleTracks(): MediaPlaylist[];
     // (undocumented)
@@ -3291,7 +3178,7 @@ export interface SubtitleTrackSwitchData {
 //
 // @public (undocumented)
 export class TimelineController implements ComponentAPI {
-    constructor(hls: Hls);
+    constructor(hls: HlsBase);
     // (undocumented)
     addCues(trackName: string, startTime: number, endTime: number, screen: CaptionScreen, cueRanges: Array<[number, number]>): void;
     // (undocumented)

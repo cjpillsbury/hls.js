@@ -1,7 +1,7 @@
 /**
  * @author Stephan Hesse <disparat@gmail.com> | <tchakabam@gmail.com>
  *
- * DRM support for Hls.js
+ * DRM support for HlsBase.js
  */
 import { Events } from '../events';
 import { ErrorTypes, ErrorDetails } from '../errors';
@@ -25,7 +25,7 @@ import { DecryptData, LevelKey } from '../loader/level-key';
 import Hex from '../utils/hex';
 import { bin2str, parsePssh, parseSinf } from '../utils/mp4-tools';
 import { EventEmitter } from 'eventemitter3';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { ComponentAPI } from '../types/component-api';
 import type {
   MediaAttachedData,
@@ -68,7 +68,7 @@ export interface MediaKeySessionContext {
 class EMEController extends Logger implements ComponentAPI {
   public static CDMCleanupPromise: Promise<void> | void;
 
-  private readonly hls: Hls;
+  private readonly hls: HlsBase;
   private readonly config: EMEControllerConfig & {
     loader: { new (confg: HlsConfig): Loader<LoaderContext> };
     certLoadPolicy: LoadPolicy;
@@ -88,7 +88,7 @@ class EMEController extends Logger implements ComponentAPI {
     ? [EMEController.CDMCleanupPromise]
     : [];
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super('eme', hls.logger);
     this.hls = hls;
     this.config = hls.config;

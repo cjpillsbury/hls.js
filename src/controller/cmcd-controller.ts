@@ -1,5 +1,5 @@
 import { Events } from '../events';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import { Cmcd } from '@svta/common-media-library/cmcd/Cmcd';
 import { CmcdObjectType } from '@svta/common-media-library/cmcd/CmcdObjectType';
 import { CmcdStreamingFormat } from '@svta/common-media-library/cmcd/CmcdStreamingFormat';
@@ -30,7 +30,7 @@ import type {
  * @see https://cdn.cta.tech/cta/media/media/resources/standards/pdfs/cta-5004-final.pdf
  */
 export default class CMCDController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private config: HlsConfig;
   private media?: HTMLMediaElement;
   private sid?: string;
@@ -43,7 +43,7 @@ export default class CMCDController implements ComponentAPI {
   private audioBuffer?: SourceBuffer; // eslint-disable-line no-restricted-globals
   private videoBuffer?: SourceBuffer; // eslint-disable-line no-restricted-globals
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     const config = (this.config = hls.config);
     const { cmcd } = config;

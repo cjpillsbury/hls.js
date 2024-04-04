@@ -10,7 +10,7 @@ import {
   subtitleTrackMatchesTextTrack,
 } from '../utils/media-option-attributes';
 import { findMatchingOption, matchesOption } from '../utils/rendition-helper';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type {
   MediaPlaylist,
   SubtitleSelectionOption,
@@ -41,7 +41,7 @@ class SubtitleTrackController extends BasePlaylistController {
 
   private asyncPollTrackChange = () => this.pollTrackChange(0);
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super(hls, 'subtitle-track-controller');
     this.registerListeners();
   }

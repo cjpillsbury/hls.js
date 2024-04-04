@@ -3,10 +3,11 @@ import { Fragment } from '../../../src/loader/fragment';
 import { LevelDetails } from '../../../src/loader/level-details';
 import { ErrorDetails, ErrorTypes } from '../../../src/errors';
 import { LoadStats } from '../../../src/loader/load-stats';
-import { hlsDefaultConfig, mergeConfig } from '../../../src/config';
+import { hlsDefaultConfig } from '../../../src/config';
 import { PlaylistLevelType } from '../../../src/types/loader';
 import { MockXhr } from '../../mocks/loader.mock';
 import { logger } from '../../../src/utils/logger';
+import { mergeConfig } from '../../../src/utils/config-utils';
 
 import sinon from 'sinon';
 import chai from 'chai';

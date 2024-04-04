@@ -13,7 +13,7 @@ import { alignMediaPlaylistByPDT } from '../utils/discontinuities';
 import { mediaAttributesIdentical } from '../utils/media-option-attributes';
 import { ErrorDetails } from '../errors';
 import type { NetworkComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { FragmentTracker } from './fragment-tracker';
 import type KeyLoader from '../loader/key-loader';
 import type { TransmuxerResult } from '../types/transmuxer';
@@ -63,7 +63,7 @@ class AudioStreamController
   private cachedTrackLoadedData: TrackLoadedData | null = null;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     fragmentTracker: FragmentTracker,
     keyLoader: KeyLoader,
   ) {

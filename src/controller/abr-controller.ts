@@ -19,7 +19,7 @@ import type { Fragment } from '../loader/fragment';
 import type { Part } from '../loader/fragment';
 import type { Level, VideoRange } from '../types/level';
 import type { LoaderStats } from '../types/loader';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type {
   FragLoadingData,
   FragLoadedData,
@@ -32,7 +32,7 @@ import type {
 import type { AbrComponentAPI } from '../types/component-api';
 
 class AbrController extends Logger implements AbrComponentAPI {
-  protected hls: Hls;
+  protected hls: HlsBase;
   private lastLevelLoadSec: number = 0;
   private lastLoadedFragLevel: number = -1;
   private firstSelection: number = -1;
@@ -47,7 +47,7 @@ class AbrController extends Logger implements AbrComponentAPI {
 
   public bwEstimator: EwmaBandWidthEstimator;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super('abr', hls.logger);
     this.hls = hls;
     this.bwEstimator = this.initEstimator();

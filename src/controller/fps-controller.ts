@@ -1,11 +1,11 @@
 import { Events } from '../events';
 import type { ComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { MediaAttachingData } from '../types/events';
 import StreamController from './stream-controller';
 
 class FPSController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private isVideoPlaybackQualityAvailable: boolean = false;
   private timer?: number;
   private media: HTMLVideoElement | null = null;
@@ -15,7 +15,7 @@ class FPSController implements ComponentAPI {
   // stream controller must be provided as a dependency!
   private streamController!: StreamController;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
 
     this.registerListeners();

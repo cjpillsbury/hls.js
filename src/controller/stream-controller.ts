@@ -10,7 +10,7 @@ import { ChunkMetadata } from '../types/transmuxer';
 import GapController, { MAX_START_GAP_JUMP } from './gap-controller';
 import { ErrorDetails } from '../errors';
 import type { NetworkComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { Level } from '../types/level';
 import type { LevelDetails } from '../loader/level-details';
 import type { FragmentTracker } from './fragment-tracker';
@@ -56,7 +56,7 @@ export default class StreamController
   private videoBuffer: any | null = null;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     fragmentTracker: FragmentTracker,
     keyLoader: KeyLoader,
   ) {
@@ -1075,7 +1075,7 @@ export default class StreamController
     const { frag, part, level } = context;
     const { video, text, id3, initSegment } = remuxResult;
     const { details } = level;
-    // The audio-stream-controller handles audio buffering if Hls.js is playing an alternate audio track
+    // The audio-stream-controller handles audio buffering if HlsBase.js is playing an alternate audio track
     const audio = this.altAudio ? undefined : remuxResult.audio;
 
     // Check if the current fragment has been aborted. We check this by first seeing if we're still playing the current level.

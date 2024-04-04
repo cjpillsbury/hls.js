@@ -9,7 +9,7 @@ import {
 import { findFragmentByPTS } from './fragment-finders';
 import { HdcpLevel, HdcpLevels } from '../types/level';
 import { Logger } from '../utils/logger';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { RetryConfig } from '../config';
 import type { NetworkComponentAPI } from '../types/component-api';
 import type { ErrorData } from '../types/events';
@@ -54,11 +54,11 @@ export default class ErrorController
   extends Logger
   implements NetworkComponentAPI
 {
-  private readonly hls: Hls;
+  private readonly hls: HlsBase;
   private playlistError: number = 0;
   private penalizedRenditions: PenalizedRenditions = {};
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super('error-controller', hls.logger);
     this.hls = hls;
     this.registerListeners();

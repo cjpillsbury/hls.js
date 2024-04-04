@@ -16,14 +16,14 @@ import { EventEmitter } from 'eventemitter3';
 import { Fragment, Part } from '../loader/fragment';
 import { getM2TSSupportedAudioTypes } from '../utils/codecs';
 import type { ChunkMetadata, TransmuxerResult } from '../types/transmuxer';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { HlsEventEmitter } from '../events';
 import type { PlaylistLevelType } from '../types/loader';
 import type { RationalTimestamp } from '../utils/timescale-conversion';
 
 export default class TransmuxerInterface {
   public error: Error | null = null;
-  private hls: Hls;
+  private hls: HlsBase;
   private id: PlaylistLevelType;
   private observer: HlsEventEmitter;
   private frag: Fragment | null = null;
@@ -36,7 +36,7 @@ export default class TransmuxerInterface {
   private onFlush: (chunkMeta: ChunkMetadata) => void;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     id: PlaylistLevelType,
     onTransmuxComplete: (transmuxResult: TransmuxerResult) => void,
     onFlush: (chunkMeta: ChunkMetadata) => void,

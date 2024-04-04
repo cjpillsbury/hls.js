@@ -13,7 +13,7 @@ import {
   type LoaderResponse,
   type LoaderStats,
 } from '../types/loader';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { NetworkComponentAPI } from '../types/component-api';
 import type {
   SteeringManifestLoadedData,
@@ -52,7 +52,7 @@ export default class ContentSteeringController
   extends Logger
   implements NetworkComponentAPI
 {
-  private readonly hls: Hls;
+  private readonly hls: HlsBase;
   private loader: Loader<LoaderContext> | null = null;
   private uri: string | null = null;
   private pathwayId: string = '.';
@@ -67,7 +67,7 @@ export default class ContentSteeringController
   private subtitleTracks: MediaPlaylist[] | null = null;
   private penalizedPathways: { [pathwayId: string]: number } = {};
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     super('content-steering', hls.logger);
     this.hls = hls;
     this.registerListeners();

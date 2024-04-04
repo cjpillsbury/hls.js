@@ -35,7 +35,7 @@ import type {
 } from '../types/events';
 import type { ComponentAPI } from '../types/component-api';
 import type { ChunkMetadata } from '../types/transmuxer';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { FragmentTracker } from './fragment-tracker';
 import type { LevelDetails } from '../loader/level-details';
 import type { HlsConfig } from '../config';
@@ -58,7 +58,7 @@ export default class BufferController extends Logger implements ComponentAPI {
   // References to event listeners for each SourceBuffer, so that they can be referenced for event removal
   private listeners!: SourceBufferListeners;
 
-  private hls: Hls;
+  private hls: HlsBase;
   private fragmentTracker: FragmentTracker;
 
   // The number of BUFFER_CODEC events received before any sourceBuffers are created
@@ -97,7 +97,7 @@ export default class BufferController extends Logger implements ComponentAPI {
   public pendingTracks: TrackSet = {};
   public sourceBuffer!: SourceBuffers;
 
-  constructor(hls: Hls, fragmentTracker: FragmentTracker) {
+  constructor(hls: HlsBase, fragmentTracker: FragmentTracker) {
     super('buffer-controller', hls.logger);
     this.hls = hls;
     this.fragmentTracker = fragmentTracker;
@@ -297,7 +297,7 @@ export default class BufferController extends Logger implements ComponentAPI {
       }
 
       // clean up video tag src only if it's our own url. some external libraries might
-      // hijack the video tag and change its 'src' without destroying the Hls instance first
+      // hijack the video tag and change its 'src' without destroying the HlsBase instance first
       if (this.mediaSrc === _objectUrl) {
         media.removeAttribute('src');
         if (this.appendSource) {

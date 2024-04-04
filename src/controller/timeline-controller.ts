@@ -28,7 +28,7 @@ import type {
   BufferFlushingData,
   FragLoadingData,
 } from '../types/events';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { ComponentAPI } from '../types/component-api';
 import type { HlsConfig } from '../config';
 import type { CuesInterface } from '../utils/cues';
@@ -52,7 +52,7 @@ type NonNativeCaptionsTrack = {
 };
 
 export class TimelineController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private media: HTMLMediaElement | null = null;
   private config: HlsConfig;
   private enabled: boolean = true;
@@ -77,7 +77,7 @@ export class TimelineController implements ComponentAPI {
     textTrack4: TrackProperties;
   };
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     this.config = hls.config;
     this.Cues = hls.config.cueHandler;
@@ -244,7 +244,7 @@ export class TimelineController implements ComponentAPI {
     if (!existingTrack) {
       const textTrack = this.createTextTrack('captions', label, languageCode);
       if (textTrack) {
-        // Set a special property on the track so we know it's managed by Hls.js
+        // Set a special property on the track so we know it's managed by HlsBase.js
         textTrack[trackName] = true;
         captionsTracks[trackName] = textTrack;
       }

@@ -47,7 +47,7 @@ import type {
 import type { FragmentTracker } from './fragment-tracker';
 import type { Level } from '../types/level';
 import type { RemuxedTrack } from '../types/remuxer';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type { HlsConfig } from '../config';
 import type { NetworkComponentAPI } from '../types/component-api';
 import type { SourceBufferName } from '../types/buffer';
@@ -75,7 +75,7 @@ export default class BaseStreamController
   extends TaskLoop
   implements NetworkComponentAPI
 {
-  protected hls: Hls;
+  protected hls: HlsBase;
 
   protected fragPrevious: Fragment | null = null;
   protected fragCurrent: Fragment | null = null;
@@ -104,7 +104,7 @@ export default class BaseStreamController
   private loadingParts: boolean = false;
 
   constructor(
-    hls: Hls,
+    hls: HlsBase,
     fragmentTracker: FragmentTracker,
     keyLoader: KeyLoader,
     logPrefix: string,

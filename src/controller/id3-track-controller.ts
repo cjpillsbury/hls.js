@@ -18,7 +18,7 @@ import type {
   MediaAttachedData,
 } from '../types/events';
 import type { ComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 
 declare global {
   interface Window {
@@ -82,7 +82,7 @@ function hexToArrayBuffer(str): ArrayBuffer {
   ).buffer;
 }
 class ID3TrackController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private id3Track: TextTrack | null = null;
   private media: HTMLMediaElement | null = null;
   private dateRangeCuesAppended: Record<
@@ -94,7 +94,7 @@ class ID3TrackController implements ComponentAPI {
     }
   > = {};
 
-  constructor(hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     this._registerListeners();
   }

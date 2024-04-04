@@ -22,7 +22,7 @@ import type {
 import { PlaylistContextType, PlaylistLevelType } from '../types/loader';
 import { LevelDetails } from './level-details';
 import { AttrList } from '../utils/attr-list';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 import type {
   ErrorData,
   LevelLoadingData,
@@ -63,13 +63,13 @@ function getResponseUrl(
 }
 
 class PlaylistLoader implements NetworkComponentAPI {
-  private readonly hls: Hls;
+  private readonly hls: HlsBase;
   private readonly loaders: {
     [key: string]: Loader<LoaderContext>;
   } = Object.create(null);
   private variableList: VariableMap | null = null;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     this.registerListeners();
   }

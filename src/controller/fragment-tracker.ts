@@ -13,7 +13,7 @@ import type {
   FragBufferedData,
   FragLoadedData,
 } from '../types/events';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 
 export const enum FragmentState {
   NOT_LOADED = 'NOT_LOADED',
@@ -36,10 +36,10 @@ export class FragmentTracker implements ComponentAPI {
     | null = Object.create(null);
 
   private bufferPadding: number = 0.2;
-  private hls: Hls;
+  private hls: HlsBase;
   private hasGaps: boolean = false;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
 
     this._registerListeners();

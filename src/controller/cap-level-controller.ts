@@ -13,11 +13,11 @@ import type {
 } from '../types/events';
 import StreamController from './stream-controller';
 import type { ComponentAPI } from '../types/component-api';
-import type Hls from '../hls';
+import type HlsBase from '../hlsbase';
 
 type RestrictedLevel = { width: number; height: number; bitrate: number };
 class CapLevelController implements ComponentAPI {
-  private hls: Hls;
+  private hls: HlsBase;
   private autoLevelCapping: number;
   private firstLevel: number;
   private media: HTMLVideoElement | null;
@@ -26,7 +26,7 @@ class CapLevelController implements ComponentAPI {
   private clientRect: { width: number; height: number } | null;
   private streamController?: StreamController;
 
-  constructor(hls: Hls) {
+  constructor(hls: HlsBase) {
     this.hls = hls;
     this.autoLevelCapping = Number.POSITIVE_INFINITY;
     this.firstLevel = -1;

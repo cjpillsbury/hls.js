@@ -14,11 +14,10 @@ import CMCDController from './controller/cmcd-controller';
 import ContentSteeringController from './controller/content-steering-controller';
 import ErrorController from './controller/error-controller';
 import XhrLoader from './utils/xhr-loader';
-import FetchLoader, { fetchSupported } from './utils/fetch-loader';
 import Cues from './utils/cues';
 import { requestMediaKeySystemAccess } from './utils/mediakeys-helper';
 
-import type Hls from './hls';
+import type HlsBase from './hlsbase';
 import type { CuesInterface } from './utils/cues';
 import type { ILogger } from './utils/logger';
 import type { MediaKeyFunc, KeySystems } from './utils/mediakeys-helper';
@@ -89,7 +88,7 @@ export type DRMSystemConfiguration = {
   licenseUrl: string;
   serverCertificateUrl?: string;
   generateRequest?: (
-    this: Hls,
+    this: HlsBase,
     initDataType: string,
     initData: ArrayBuffer | null,
     keyContext: MediaKeySessionContext,
@@ -105,14 +104,14 @@ export type DRMSystemsConfiguration = Partial<
 
 export type EMEControllerConfig = {
   licenseXhrSetup?: (
-    this: Hls,
+    this: HlsBase,
     xhr: XMLHttpRequest,
     url: string,
     keyContext: MediaKeySessionContext,
     licenseChallenge: Uint8Array,
   ) => void | Uint8Array | Promise<Uint8Array | void>;
   licenseResponseCallback?: (
-    this: Hls,
+    this: HlsBase,
     xhr: XMLHttpRequest,
     url: string,
     keyContext: MediaKeySessionContext,
@@ -550,136 +549,4 @@ function timelineConfig(): TimelineControllerConfig {
     captionsTextTrack4LanguageCode: '', // used by timeline-controller
     renderTextTracksNatively: true,
   };
-}
-
-/**
- * @ignore
- */
-export function mergeConfig(
-  defaultConfig: HlsConfig,
-  userConfig: Partial<HlsConfig>,
-  logger: ILogger,
-): HlsConfig {
-  if (
-    (userConfig.liveSyncDurationCount ||
-      userConfig.liveMaxLatencyDurationCount) &&
-    (userConfig.liveSyncDuration || userConfig.liveMaxLatencyDuration)
-  ) {
-    throw new Error(
-      "Illegal hls.js config: don't mix up liveSyncDurationCount/liveMaxLatencyDurationCount and liveSyncDuration/liveMaxLatencyDuration",
-    );
-  }
-
-  if (
-    userConfig.liveMaxLatencyDurationCount !== undefined &&
-    (userConfig.liveSyncDurationCount === undefined ||
-      userConfig.liveMaxLatencyDurationCount <=
-        userConfig.liveSyncDurationCount)
-  ) {
-    throw new Error(
-      'Illegal hls.js config: "liveMaxLatencyDurationCount" must be greater than "liveSyncDurationCount"',
-    );
-  }
-
-  if (
-    userConfig.liveMaxLatencyDuration !== undefined &&
-    (userConfig.liveSyncDuration === undefined ||
-      userConfig.liveMaxLatencyDuration <= userConfig.liveSyncDuration)
-  ) {
-    throw new Error(
-      'Illegal hls.js config: "liveMaxLatencyDuration" must be greater than "liveSyncDuration"',
-    );
-  }
-
-  const defaultsCopy = deepCpy(defaultConfig);
-
-  // Backwards compatibility with deprecated config values
-  const deprecatedSettingTypes = ['manifest', 'level', 'frag'];
-  const deprecatedSettings = [
-    'TimeOut',
-    'MaxRetry',
-    'RetryDelay',
-    'MaxRetryTimeout',
-  ];
-  deprecatedSettingTypes.forEach((type) => {
-    const policyName = `${type === 'level' ? 'playlist' : type}LoadPolicy`;
-    const policyNotSet = userConfig[policyName] === undefined;
-    const report: string[] = [];
-    deprecatedSettings.forEach((setting) => {
-      const deprecatedSetting = `${type}Loading${setting}`;
-      const value = userConfig[deprecatedSetting];
-      if (value !== undefined && policyNotSet) {
-        report.push(deprecatedSetting);
-        const settings: LoaderConfig = defaultsCopy[policyName].default;
-        userConfig[policyName] = { default: settings };
-        switch (setting) {
-          case 'TimeOut':
-            settings.maxLoadTimeMs = value;
-            settings.maxTimeToFirstByteMs = value;
-            break;
-          case 'MaxRetry':
-            settings.errorRetry!.maxNumRetry = value;
-            settings.timeoutRetry!.maxNumRetry = value;
-            break;
-          case 'RetryDelay':
-            settings.errorRetry!.retryDelayMs = value;
-            settings.timeoutRetry!.retryDelayMs = value;
-            break;
-          case 'MaxRetryTimeout':
-            settings.errorRetry!.maxRetryDelayMs = value;
-            settings.timeoutRetry!.maxRetryDelayMs = value;
-            break;
-        }
-      }
-    });
-    if (report.length) {
-      logger.warn(
-        `hls.js config: "${report.join(
-          '", "',
-        )}" setting(s) are deprecated, use "${policyName}": ${JSON.stringify(
-          userConfig[policyName],
-        )}`,
-      );
-    }
-  });
-
-  return {
-    ...defaultsCopy,
-    ...userConfig,
-  };
-}
-
-function deepCpy(obj: any): any {
-  if (obj && typeof obj === 'object') {
-    if (Array.isArray(obj)) {
-      return obj.map(deepCpy);
-    }
-    return Object.keys(obj).reduce((result, key) => {
-      result[key] = deepCpy(obj[key]);
-      return result;
-    }, {});
-  }
-  return obj;
-}
-
-/**
- * @ignore
- */
-export function enableStreamingMode(config: HlsConfig, logger: ILogger) {
-  const currentLoader = config.loader;
-  if (currentLoader !== FetchLoader && currentLoader !== XhrLoader) {
-    // If a developer has configured their own loader, respect that choice
-    logger.log(
-      '[config]: Custom loader detected, cannot enable progressive streaming',
-    );
-    config.progressive = false;
-  } else {
-    const canStreamProgressively = fetchSupported();
-    if (canStreamProgressively) {
-      config.loader = FetchLoader;
-      config.progressive = true;
-      config.enableSoftwareAES = true;
-      logger.log('[config]: Progressive streaming enabled, using FetchLoader');
-    }
-  }
 }
