@@ -314,6 +314,20 @@ const buildRollupConfig = ({
 };
 
 const configs = Object.entries({
+  base: buildRollupConfig({
+    input: './src/hlsbase.ts',
+    outputFile: `./dist/hlsbase.mjs`,
+    type: BUILD_TYPE.full,
+    format: FORMAT.esm,
+    minified: false,
+  }),
+  baseMin: buildRollupConfig({
+    input: './src/hlsbase.ts',
+    outputFile: `./dist/hlsbase.min.mjs`,
+    type: BUILD_TYPE.full,
+    format: FORMAT.esm,
+    minified: true,
+  }),
   full: buildRollupConfig({
     type: BUILD_TYPE.full,
     format: FORMAT.umd,
