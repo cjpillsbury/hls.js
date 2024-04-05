@@ -3,8 +3,12 @@ import { Events } from '../events';
 import { Bufferable, BufferHelper } from '../utils/buffer-helper';
 import { FragmentState } from './fragment-tracker';
 import { Level } from '../types/level';
-import { PlaylistContextType, PlaylistLevelType } from '../types/loader';
-import { Fragment, ElementaryStreamTypes, Part } from '../loader/fragment';
+import {
+  ElementaryStreamTypes,
+  PlaylistContextType,
+  PlaylistLevelType,
+} from '../types/loader';
+import { Fragment, Part } from '../loader/fragment';
 import ChunkCache from '../demux/chunk-cache';
 import TransmuxerInterface from '../demux/transmuxer-interface';
 import { ChunkMetadata } from '../types/transmuxer';

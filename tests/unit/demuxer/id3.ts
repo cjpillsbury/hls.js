@@ -1,6 +1,6 @@
 import * as ID3 from '../../../src/demux/id3';
 import { expect } from 'chai';
-import { utf8ArrayToStr } from '../../../src/demux/id3';
+import { utf8ArrayToStr } from '../../../src/utils/typed-array';
 
 describe('ID3 tests', function () {
   const mockID3Header = Uint8Array.from([

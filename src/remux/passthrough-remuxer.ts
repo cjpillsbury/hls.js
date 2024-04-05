@@ -13,9 +13,9 @@ import {
   offsetStartDTS,
   parseInitSegment,
 } from '../utils/mp4-tools';
-import { ElementaryStreamTypes } from '../loader/fragment';
 import { logger } from '../utils/logger';
 import { getCodecCompatibleName } from '../utils/codecs';
+import { ElementaryStreamTypes } from '../types/loader';
 import type { TrackSet } from '../types/track';
 import type {
   InitSegmentData,

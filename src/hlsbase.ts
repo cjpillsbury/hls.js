@@ -35,7 +35,7 @@ import type { HlsConfig } from './config';
 import type { BufferInfo } from './utils/buffer-helper';
 
 export default class HlsBase implements HlsEventEmitter {
-  protected static defaultConfig: HlsConfig | undefined;
+  public static defaultConfig: HlsConfig | undefined;
 
   /**
    * The runtime configuration used by the player. At instantiation this is combination of `hls.userConfig` merged over `Hls.DefaultConfig`.

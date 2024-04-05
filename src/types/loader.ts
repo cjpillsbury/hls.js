@@ -5,6 +5,12 @@ import type { KeyLoaderInfo } from '../loader/key-loader';
 import type { LevelDetails } from '../loader/level-details';
 import type { HlsUrlParameters } from './level';
 
+export const enum ElementaryStreamTypes {
+  AUDIO = 'audio',
+  VIDEO = 'video',
+  AUDIOVIDEO = 'audiovideo',
+}
+
 export interface LoaderContext {
   // target URL
   url: string;

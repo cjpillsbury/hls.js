@@ -26,6 +26,8 @@ import type ErrorController from './controller/error-controller';
 import type FPSController from './controller/fps-controller';
 import HlsBase from './hlsbase';
 
+HlsBase.defaultConfig = hlsDefaultConfig;
+
 /**
  * The `Hls` class is the core of the HLS.js library used to instantiate player instances.
  * @public
@@ -54,7 +56,6 @@ export default class Hls extends HlsBase implements HlsEventEmitter {
    */
   constructor(userConfig: Partial<HlsConfig> = {}) {
     super(userConfig);
-    HlsBase.defaultConfig = hlsDefaultConfig;
   }
 }
 
@@ -151,11 +152,12 @@ export type {
 } from './types/level';
 export type { MediaDecodingInfo } from './utils/mediacapabilities-helper';
 export type {
-  PlaylistLevelType,
+  ElementaryStreamTypes,
   HlsChunkPerformanceTiming,
   HlsPerformanceTiming,
   HlsProgressivePerformanceTiming,
   PlaylistContextType,
+  PlaylistLevelType,
   PlaylistLoaderContext,
   FragmentLoaderContext,
   Loader,
@@ -184,7 +186,6 @@ export type {
   Fragment,
   Part,
   ElementaryStreams,
-  ElementaryStreamTypes,
   ElementaryStreamInfo,
 } from './loader/fragment';
 export type {

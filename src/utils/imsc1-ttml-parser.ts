@@ -1,7 +1,7 @@
 import { findBox } from './mp4-tools';
 import { parseTimeStamp } from './vttparser';
 import VTTCue from './vttcue';
-import { utf8ArrayToStr } from '../demux/id3';
+import { utf8ArrayToStr } from '../utils/typed-array';
 import {
   RationalTimestamp,
   toTimescaleFromScale,

@@ -2,19 +2,14 @@ import { buildAbsoluteURL } from 'url-toolkit';
 import { LevelKey } from './level-key';
 import { LoadStats } from './load-stats';
 import { AttrList } from '../utils/attr-list';
-import type {
+import {
+  ElementaryStreamTypes,
   FragmentLoaderContext,
   KeyLoaderContext,
   Loader,
   PlaylistLevelType,
 } from '../types/loader';
 import type { KeySystemFormats } from '../utils/mediakeys-helper';
-
-export const enum ElementaryStreamTypes {
-  AUDIO = 'audio',
-  VIDEO = 'video',
-  AUDIOVIDEO = 'audiovideo',
-}
 
 export interface ElementaryStreamInfo {
   startPTS: number;

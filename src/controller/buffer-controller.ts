@@ -7,12 +7,8 @@ import {
   pickMostCompleteCodecName,
 } from '../utils/codecs';
 import { getMediaSource } from '../utils/mediasource-helper';
-import {
-  ElementaryStreamTypes,
-  type Part,
-  type Fragment,
-} from '../loader/fragment';
-import { PlaylistLevelType } from '../types/loader';
+import type { Part, Fragment } from '../loader/fragment';
+import { PlaylistLevelType, ElementaryStreamTypes } from '../types/loader';
 import type { TrackSet } from '../types/track';
 import BufferOperationQueue from './buffer-operation-queue';
 import {

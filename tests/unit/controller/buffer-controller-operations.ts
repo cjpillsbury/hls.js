@@ -10,8 +10,11 @@ import { BufferAppendingData } from '../../../src/types/events';
 import { Events } from '../../../src/events';
 import { FragmentTracker } from '../../../src/controller/fragment-tracker';
 import { ErrorDetails, ErrorTypes } from '../../../src/errors';
-import { ElementaryStreamTypes, Fragment } from '../../../src/loader/fragment';
-import { PlaylistLevelType } from '../../../src/types/loader';
+import { Fragment } from '../../../src/loader/fragment';
+import {
+  ElementaryStreamTypes,
+  PlaylistLevelType,
+} from '../../../src/types/loader';
 import { ChunkMetadata } from '../../../src/types/transmuxer';
 import { LevelDetails } from '../../../src/loader/level-details';
 

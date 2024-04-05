@@ -3,8 +3,12 @@ import { changeTypeSupported } from '../is-supported';
 import { Events } from '../events';
 import { BufferHelper, BufferInfo } from '../utils/buffer-helper';
 import { FragmentState } from './fragment-tracker';
-import { PlaylistContextType, PlaylistLevelType } from '../types/loader';
-import { ElementaryStreamTypes, Fragment } from '../loader/fragment';
+import {
+  ElementaryStreamTypes,
+  PlaylistContextType,
+  PlaylistLevelType,
+} from '../types/loader';
+import { Fragment } from '../loader/fragment';
 import TransmuxerInterface from '../demux/transmuxer-interface';
 import { ChunkMetadata } from '../types/transmuxer';
 import GapController, { MAX_START_GAP_JUMP } from './gap-controller';

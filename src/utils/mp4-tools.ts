@@ -1,10 +1,9 @@
-import { ElementaryStreamTypes } from '../loader/fragment';
-import { sliceUint8 } from './typed-array';
-import { utf8ArrayToStr } from '../demux/id3';
+import { sliceUint8, utf8ArrayToStr } from './typed-array';
 import { logger } from '../utils/logger';
 import Hex from './hex';
 import type { PassthroughTrack, UserdataSample } from '../types/demuxer';
 import type { DecryptData } from '../loader/level-key';
+import { ElementaryStreamTypes } from '../types/loader';
 
 const UINT32_MAX = Math.pow(2, 32) - 1;
 const push = [].push;
