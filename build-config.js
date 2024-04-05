@@ -276,6 +276,14 @@ const buildRollupConfig = ({
   const outputName = buildTypeToOutputName[type];
   const extension = format === FORMAT.esm ? 'mjs' : 'js';
 
+  let statsFileName;
+  if (!outputFile) {
+    statsFileName = `${outputName}${minified ? '.min' : ''}.${extension}.stats.html`;
+  } else {
+    const fileName = path.basename(outputFile);
+    statsFileName = `${fileName}.stats.html`;
+  }
+
   return {
     input,
     onLog: buildOnLog({ allowCircularDeps }),
@@ -312,7 +320,7 @@ const buildRollupConfig = ({
         : []),
       visualizer({
         emitFile: true,
-        filename: `${outputName}${minified ? `.min` : ''}.${extension}.stats.html`,
+        filename: statsFileName,
       }),
     ],
   };
@@ -321,16 +329,30 @@ const buildRollupConfig = ({
 const configs = Object.entries({
   base: buildRollupConfig({
     input: './src/hlsbase.ts',
-    outputFile: `./dist/hlsbase.mjs`,
+    outputFile: `./dist/hlsbase.js`,
     type: BUILD_TYPE.full,
-    format: FORMAT.esm,
+    format: FORMAT.umd,
     minified: false,
   }),
   baseMin: buildRollupConfig({
     input: './src/hlsbase.ts',
-    outputFile: `./dist/hlsbase.min.mjs`,
+    outputFile: `./dist/hlsbase.min.js`,
     type: BUILD_TYPE.full,
-    format: FORMAT.esm,
+    format: FORMAT.umd,
+    minified: true,
+  }),
+  baseLight: buildRollupConfig({
+    input: './src/hlsbase.ts',
+    outputFile: `./dist/hlsbase.light.js`,
+    type: BUILD_TYPE.light,
+    format: FORMAT.umd,
+    minified: false,
+  }),
+  baseLightMin: buildRollupConfig({
+    input: './src/hlsbase.ts',
+    outputFile: `./dist/hlsbase.light.min.js`,
+    type: BUILD_TYPE.light,
+    format: FORMAT.umd,
     minified: true,
   }),
   full: buildRollupConfig({
